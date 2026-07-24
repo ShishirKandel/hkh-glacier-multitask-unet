@@ -41,6 +41,8 @@ losses.py          masked BCE/Dice/focal + masked L1 distance loss
 train.py           training loop, smoothed checkpoint selection, metrics.jsonl logging
 eval.py            one-shot masked evaluation (confusion matrix, IoU/Dice/F1, dist MAE)
 configs/           one YAML per ablation rung (a, b1, b2, c, d1, d2, e1, e2, f, final)
+figures/           report-figure generation scripts (architecture diagram, split map,
+                   training curves, qualitative montage, ablation summary)
 ```
 
 ## Reproducing
