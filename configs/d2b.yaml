@@ -1,0 +1,24 @@
+# Rung D2b - isolation rung after d2 underperformed d1: keeps d1's BCE+Dice loss
+# and adds ONLY the sampling-side imbalance mechanisms (debris oversampling + type
+# head weight). Focal and pos_weight (the d2 additions suspected of over-correcting)
+# are deliberately absent, to attribute d2's regression to loss- vs sampling-side.
+run: d2b
+seed: 20260716
+channels: [0, 1, 2, 3, 4, 5, 6, 7, 13, 14]
+crop: 256
+batch: 8
+lr: 0.0003
+epochs: 30
+patience: 8
+aug: true
+oversample_debris: 3
+mmap: false
+num_workers: 2
+model: {depth: 4, base: 32, dropout: 0.0, attention: false}
+heads: {dist: false}
+loss:
+  glacier: {bce: 1.0, dice: 1.0}
+  type: {bce: 1.0, dice: 1.0}
+  head_weights: {glacier: 1.0, type: 1.5}
+  pos_weight_type: 1.0
+eval_examples: 6

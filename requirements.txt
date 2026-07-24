@@ -1,0 +1,6 @@
+# Versions intentionally unpinned (Kaggle images pre-install recent builds);
+# the versions actually used are recorded at runtime into out/<run>/metrics.jsonl.
+torch
+numpy
+pyyaml
+matplotlib

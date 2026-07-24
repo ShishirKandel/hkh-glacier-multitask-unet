@@ -1,0 +1,23 @@
+# Rung B1 ??? A + NIR/SWIR/thermal bands (spectral only).
+# Indices [10,11,12] are derivable from these bands and pan/BQA [8,9] are a duplicate
+# panchromatic band and a quality bitmask ??? all excluded from the ladder (optional extension).
+run: b1
+seed: 20260716
+channels: [0, 1, 2, 3, 4, 5, 6, 7]   # visible + nir_swir_thermal
+crop: 256
+batch: 8
+lr: 0.0003
+epochs: 30
+patience: 8
+aug: false
+oversample_debris: 0
+mmap: false
+num_workers: 2
+model: {depth: 4, base: 32, dropout: 0.0, attention: false}
+heads: {dist: false}
+loss:
+  glacier: {bce: 1.0}
+  type: {bce: 1.0}
+  head_weights: {glacier: 1.0, type: 1.0}
+  pos_weight_type: 1.0
+eval_examples: 6

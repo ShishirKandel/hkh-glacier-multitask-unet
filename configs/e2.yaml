@@ -1,0 +1,41 @@
+run: e2
+seed: 20260716
+channels:
+- 0
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+- 13
+- 14
+crop: 256
+batch: 8
+lr: 0.0003
+epochs: 30
+patience: 8
+aug: true
+oversample_debris: 3
+mmap: false
+num_workers: 2
+model:
+  depth: 4
+  base: 32
+  dropout: 0.2
+  attention: true
+heads:
+  dist: false
+loss:
+  glacier:
+    bce: 1.0
+    dice: 1.0
+  type:
+    bce: 1.0
+    dice: 1.0
+  head_weights:
+    glacier: 1.0
+    type: 1.5
+  pos_weight_type: 1.0
+eval_examples: 6

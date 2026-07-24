@@ -1,0 +1,25 @@
+# Rung D2 ??? D1 + class-imbalance treatment for debris:
+# focal replaces BCE on the type head (focal generalises BCE; keeping both would
+# double-count the cross-entropy term), auto pos_weight (clean/debris pixel ratio
+# from TRAIN stats), 1+3x oversampling of debris patches, type head weight 1.5.
+run: d2
+seed: 20260716
+channels: [0, 1, 2, 3, 4, 5, 6, 7, 13, 14]
+crop: 256
+batch: 8
+lr: 0.0003
+epochs: 30
+patience: 8
+aug: true
+oversample_debris: 3
+mmap: false
+num_workers: 2
+model: {depth: 4, base: 32, dropout: 0.0, attention: false}
+heads: {dist: false}
+loss:
+  glacier: {bce: 1.0, dice: 1.0}
+  type: {focal: 1.0, dice: 1.0}
+  focal_gamma: 2.0
+  head_weights: {glacier: 1.0, type: 1.5}
+  pos_weight_type: auto
+eval_examples: 6

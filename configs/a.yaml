@@ -1,0 +1,22 @@
+# Rung A ??? baseline: visible bands only, plain U-Net, BCE only, no jitter, no oversampling.
+# The type (debris-vs-clean) head exists from this rung on: the task requires it throughout.
+run: a
+seed: 20260716
+channels: [0, 1, 2]          # visible
+crop: 256
+batch: 8
+lr: 0.0003                    # Adam
+epochs: 30
+patience: 8
+aug: false                   # spectral jitter off (crop/flip/rot90 always on in training)
+oversample_debris: 0
+mmap: false
+num_workers: 2
+model: {depth: 4, base: 32, dropout: 0.0, attention: false}
+heads: {dist: false}
+loss:
+  glacier: {bce: 1.0}
+  type: {bce: 1.0}
+  head_weights: {glacier: 1.0, type: 1.0}
+  pos_weight_type: 1.0
+eval_examples: 6
