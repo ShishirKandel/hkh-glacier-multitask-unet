@@ -1,0 +1,85 @@
+[{"stream_name":"stderr","time":6.025234332,"data":"/usr/local/lib/python3.12/dist-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":6.025295043,"data":"  validate(nb)\n"}
+,{"stream_name":"stderr","time":6.837726648,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.8377535720000004,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.83775857,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.837762484,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":7.401416435,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.401459049,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.401465035,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.401469168,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":8.515798329999999,"data":"Fri Jul 17 04:23:05 2026       \r\n"}
+,{"stream_name":"stdout","time":8.515850708,"data":"+-----------------------------------------------------------------------------------------+\r\n"}
+,{"stream_name":"stdout","time":8.515855719,"data":"| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |\r\n"}
+,{"stream_name":"stdout","time":8.515859443,"data":"+-----------------------------------------+------------------------+----------------------+\r\n"}
+,{"stream_name":"stdout","time":8.515863049,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\r\n"}
+,{"stream_name":"stdout","time":8.515866488,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\r\n"}
+,{"stream_name":"stdout","time":8.515870157,"data":"|                                         |                        |               MIG M. |\r\n"}
+,{"stream_name":"stdout","time":8.51587832,"data":"|=========================================+========================+======================|\r\n"}
+,{"stream_name":"stdout","time":8.566263221,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\r\n"}
+,{"stream_name":"stdout","time":8.566284943,"data":"| N/A   54C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |\r\n"}
+,{"stream_name":"stdout","time":8.566289372,"data":"|                                         |                        |                  N/A |\r\n"}
+,{"stream_name":"stdout","time":8.566292983,"data":"+-----------------------------------------+------------------------+----------------------+\r\n"}
+,{"stream_name":"stdout","time":8.566298026,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\r\n"}
+,{"stream_name":"stdout","time":8.566301544,"data":"| N/A   50C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |\r\n"}
+,{"stream_name":"stdout","time":8.566304904,"data":"|                                         |                        |                  N/A |\r\n"}
+,{"stream_name":"stdout","time":8.566330097,"data":"+-----------------------------------------+------------------------+----------------------+\r\n"}
+,{"stream_name":"stdout","time":8.566334733,"data":"\r\n"}
+,{"stream_name":"stdout","time":8.566338289,"data":"+-----------------------------------------------------------------------------------------+\r\n"}
+,{"stream_name":"stdout","time":8.566342533,"data":"| Processes:                                                                              |\r\n"}
+,{"stream_name":"stdout","time":8.566346436,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\r\n"}
+,{"stream_name":"stdout","time":8.566349909,"data":"|        ID   ID                                                               Usage      |\r\n"}
+,{"stream_name":"stdout","time":8.566353338,"data":"|=========================================================================================|\r\n"}
+,{"stream_name":"stdout","time":8.566356799,"data":"|  No running processes found                                                             |\r\n"}
+,{"stream_name":"stdout","time":8.566360251,"data":"+-----------------------------------------------------------------------------------------+\r\n"}
+,{"stream_name":"stdout","time":9.000142203,"data":"06ae50f11dd4\r\n"}
+,{"stream_name":"stdout","time":14.012933607,"data":"python 3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":14.012970412,"data":"torch 2.10.0+cu128 cuda True Tesla T4\n"}
+,{"stream_name":"stdout","time":14.012976352,"data":"numpy 2.0.2\n"}
+,{"stream_name":"stdout","time":14.012980909,"data":"utc now: 2026-07-17T04:23:10.984127+00:00\n"}
+,{"stream_name":"stdout","time":14.283321471,"data":"CUDA kernel launch OK: -34.60314178466797 on Tesla T4\n"}
+,{"stream_name":"stdout","time":14.381212248,"data":"=== /kaggle/input tree (2 levels) ===\n"}
+,{"stream_name":"stdout","time":14.381238488,"data":"/kaggle/input/datasets\n"}
+,{"stream_name":"stdout","time":14.381248155,"data":"    /kaggle/input/datasets/shishirkandel\n"}
+,{"stream_name":"stdout","time":14.381251743,"data":"['configs', 'data.py', 'eval.py', 'losses.py', 'model.py', 'requirements.txt', 'train.py'] ['a.yaml', 'b1.yaml', 'b2.yaml', 'c.yaml', 'd1.yaml', 'd2.yaml', 'e1.yaml', 'e2.yaml', 'f.yaml']\n"}
+,{"stream_name":"stdout","time":14.40254275,"data":"DATA root: /kaggle/input/datasets/shishirkandel/hkh-glacier-shards\n"}
+,{"stream_name":"stdout","time":14.402567644,"data":"  train: 25 shards\n"}
+,{"stream_name":"stdout","time":14.402571654,"data":"  val: 10 shards\n"}
+,{"stream_name":"stdout","time":14.402574971,"data":"  test: 9 shards\n"}
+,{"stream_name":"stdout","time":14.402578034,"data":"  east: 8 shards\n"}
+,{"stream_name":"stdout","time":147.935274091,"data":"epoch   1  loss=1.8153  gIoU=0.5151  dIoU=0.0287  smoothed=0.2719\r\n"}
+,{"stream_name":"stdout","time":189.855843807,"data":"epoch   2  loss=1.6381  gIoU=0.5755  dIoU=0.0241  smoothed=0.2859\r\n"}
+,{"stream_name":"stdout","time":231.692780084,"data":"epoch   3  loss=1.5334  gIoU=0.6049  dIoU=0.0571  smoothed=0.3009\r\n"}
+,{"stream_name":"stdout","time":272.911407747,"data":"epoch   4  loss=1.5285  gIoU=0.5119  dIoU=0.0710  smoothed=0.3074\r\n"}
+,{"stream_name":"stdout","time":314.498858524,"data":"epoch   5  loss=1.4312  gIoU=0.5888  dIoU=0.0966  smoothed=0.3217\r\n"}
+,{"stream_name":"stdout","time":356.056939378,"data":"epoch   6  loss=1.4992  gIoU=0.6073  dIoU=0.1433  smoothed=0.3365\r\n"}
+,{"stream_name":"stdout","time":398.613075463,"data":"epoch   7  loss=1.4459  gIoU=0.5905  dIoU=0.0867  smoothed=0.3522\r\n"}
+,{"stream_name":"stdout","time":439.707530199,"data":"epoch   8  loss=1.5013  gIoU=0.6177  dIoU=0.0670  smoothed=0.3521\r\n"}
+,{"stream_name":"stdout","time":480.889440674,"data":"epoch   9  loss=1.4570  gIoU=0.5516  dIoU=0.1114  smoothed=0.3375\r\n"}
+,{"stream_name":"stdout","time":523.054840617,"data":"epoch  10  loss=1.3688  gIoU=0.5777  dIoU=0.1316  smoothed=0.3428\r\n"}
+,{"stream_name":"stdout","time":564.427179847,"data":"epoch  11  loss=1.4706  gIoU=0.6103  dIoU=0.0521  smoothed=0.3391\r\n"}
+,{"stream_name":"stdout","time":605.776908154,"data":"epoch  12  loss=1.4364  gIoU=0.5722  dIoU=0.0534  smoothed=0.3329\r\n"}
+,{"stream_name":"stdout","time":647.055243235,"data":"epoch  13  loss=1.3865  gIoU=0.6323  dIoU=0.1503  smoothed=0.3451\r\n"}
+,{"stream_name":"stdout","time":688.790342575,"data":"epoch  14  loss=1.3595  gIoU=0.6343  dIoU=0.1904  smoothed=0.3721\r\n"}
+,{"stream_name":"stdout","time":730.30988628,"data":"epoch  15  loss=1.3376  gIoU=0.6021  dIoU=0.1713  smoothed=0.3968\r\n"}
+,{"stream_name":"stdout","time":771.53071858,"data":"epoch  16  loss=1.3210  gIoU=0.5723  dIoU=0.0679  smoothed=0.3730\r\n"}
+,{"stream_name":"stdout","time":812.7833285,"data":"epoch  17  loss=1.3631  gIoU=0.6369  dIoU=0.0801  smoothed=0.3551\r\n"}
+,{"stream_name":"stdout","time":855.541671569,"data":"epoch  18  loss=1.3705  gIoU=0.6346  dIoU=0.1838  smoothed=0.3626\r\n"}
+,{"stream_name":"stdout","time":898.374334695,"data":"epoch  19  loss=1.3470  gIoU=0.6190  dIoU=0.1132  smoothed=0.3779\r\n"}
+,{"stream_name":"stdout","time":942.922086558,"data":"epoch  20  loss=1.3051  gIoU=0.5820  dIoU=0.1642  smoothed=0.3828\r\n"}
+,{"stream_name":"stdout","time":986.58351719,"data":"epoch  21  loss=1.2998  gIoU=0.6367  dIoU=0.0587  smoothed=0.3623\r\n"}
+,{"stream_name":"stdout","time":1030.480269578,"data":"epoch  22  loss=1.3162  gIoU=0.6527  dIoU=0.1959  smoothed=0.3817\r\n"}
+,{"stream_name":"stdout","time":1073.448085085,"data":"epoch  23  loss=1.3053  gIoU=0.6305  dIoU=0.0760  smoothed=0.3751\r\n"}
+,{"stream_name":"stdout","time":1073.448122741,"data":"early stop: no smoothed-score improvement for 8 epochs\r\n"}
+,{"stream_name":"stdout","time":1073.448130247,"data":"done: best smoothed score 0.3968 -\u003e /kaggle/working/runs/d1/d1/best.pt\r\n"}
+,{"stream_name":"stdout","time":1108.017316799,"data":"val: gIoU=0.6021 gDice=0.7516 dIoU=0.1713 dRec=0.3411 dPrec=0.2560 macroF1=0.6720 n=283\r\n"}
+,{"stream_name":"stdout","time":1112.093430402,"data":"download:  /kaggle/working/rung_d1_artifacts.zip\n"}
+,{"stream_name":"stderr","time":1115.446103678,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1115.446148785,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1115.635183764,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1115.635217138,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1116.322694942,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":1116.676165561,"data":"[NbConvertApp] Writing 16739 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":1119.398709325,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1120.247227363,"data":"[NbConvertApp] Writing 302334 bytes to __results__.html\n"}
+]

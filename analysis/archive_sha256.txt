@@ -1,0 +1,1 @@
+SHA-256(hkh_patches.tar.gz) = 627dff4b0a9635cdb5d7868495552a707bb718fa33905d1bd7a4d96c3705e935

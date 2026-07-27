@@ -1,0 +1,17 @@
+{
+  "id": "shishirkandel/hkh-rung-runner-stw7088cem",
+  "title": "HKH rung runner (STW7088CEM)",
+  "code_file": "rung_runner.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "enable_internet": false,
+  "dataset_sources": [
+    "shishirkandel/hkh-glacier-shards",
+    "shishirkandel/hkh-glacier-code"
+  ],
+  "competition_sources": [],
+  "kernel_sources": []
+}

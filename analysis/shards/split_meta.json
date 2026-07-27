@@ -1,0 +1,83 @@
+{
+ "frozen_utc": "2026-07-16",
+ "method": "longitude-band geographic split; centroid assignment; straddlers dropped; train-side buffer 0.15 deg around all eval bands; exact shapely zero-overlap verified",
+ "bands": {
+  "test": [
+   72.95,
+   74.65
+  ],
+  "val": [
+   76.85,
+   78.15
+  ],
+  "east": [
+   86.0,
+   null
+  ]
+ },
+ "buffer_deg": 0.15,
+ "min_valid_frac_ch0": 0.3,
+ "clauses": [
+  "Per-pixel nodata masking (finite in all 15 channels) MUST be applied in loss AND all reported metrics.",
+  "Normalization statistics and class weights MUST be computed on TRAIN patches only.",
+  "EAST set is auxiliary out-of-distribution evaluation ONLY: never used for training, model selection, or early stopping; reported once in the final results.",
+  "TEST set is evaluated exactly once, after model selection on VAL.",
+  "Checkpoint selection on VAL uses a smoothed/composite criterion (e.g. debris IoU averaged over a window), not a single-evaluation peak (118 debris patches -> ~4-5pp SE).",
+  "TRAIN is extensible under the rule: new background patches may be added later iff they pass the identical assignment rule (validity >= 0.30, no straddling, outside all dilated eval slabs). Eval lists are immutable."
+ ],
+ "counts": {
+  "train": {
+   "patches": 1056,
+   "glacier": 873,
+   "debris": 435,
+   "debris_px": 2366544
+  },
+  "val": {
+   "patches": 283,
+   "glacier": 254,
+   "debris": 118,
+   "debris_px": 449699
+  },
+  "test": {
+   "patches": 315,
+   "glacier": 255,
+   "debris": 116,
+   "debris_px": 538263
+  },
+  "east": {
+   "patches": 293,
+   "glacier": 134,
+   "debris": 63,
+   "debris_px": 411274
+  },
+  "buffer_removed": {
+   "patches": 143,
+   "glacier": 130,
+   "debris": 65,
+   "debris_px": 291596
+  },
+  "dropped_straddler": {
+   "patches": 179,
+   "glacier": 157,
+   "debris": 81,
+   "debris_px": 344627
+  },
+  "invalid": {
+   "patches": 899,
+   "glacier": 167,
+   "debris": 50,
+   "debris_px": 67015
+  }
+ },
+ "within_set_duplication_factor": {
+  "train": 1.2127,
+  "val": 1.2666,
+  "test": 1.2614,
+  "east": 1.091
+ },
+ "eval_list_sha256": {
+  "val": "2f0b9a69271e01f855c6cdd8405f657eee4e1c4de663501cd3c7d090cd70f888",
+  "test": "f73747b4f7346ed25c35b9a8f0ded9b77303c7d654e2b68151ef5b1ac08c3c94",
+  "east": "f3f4c8937fb54f3e2b2d89c7b9ec13f124042ac8915d112075574d289079dfc9"
+ }
+}

@@ -24,8 +24,8 @@ once, after all model selection.
 | Test, unseen region (one-shot) | 0.402 | 0.132 | 0.595 | 5.2 px |
 | East, OOD (one-shot) | 0.494 | 0.193 | 0.665 | 2.6 px |
 
-The performance is attributed, not just obtained: a nine-rung ablation ladder
-(configs `a` through `f`) adds one change at a time. Key findings: terrain
+The performance is attributed, not just obtained: an eleven-rung ablation ladder
+(configs `a` through `final`) adds one change at a time. Key findings: terrain
 channels produce the first debris signal; Dice loss plus debris oversampling
 amplify it; the auxiliary boundary-distance regression head improves both
 classification tasks; a focal/pos-weight stack on top of Dice actively hurts
@@ -40,10 +40,53 @@ model.py           U-Net from scratch; optional attention gates; prior-logit hea
 losses.py          masked BCE/Dice/focal + masked L1 distance loss
 train.py           training loop, smoothed checkpoint selection, metrics.jsonl logging
 eval.py            one-shot masked evaluation (confusion matrix, IoU/Dice/F1, dist MAE)
-configs/           one YAML per ablation rung (a, b1, b2, c, d1, d2, e1, e2, f, final)
-figures/           report-figure generation scripts (architecture diagram, split map,
-                   training curves, qualitative montage, ablation summary)
+configs/           one YAML per ablation rung (a, b1, b2, c, d1, d2, d2b, e1, e2,
+                   f, final) plus rehearse_a
+figures/           figure generation scripts (sample patch, split map, architecture
+                   diagram, ablation ladder, training curves, qualitative montage)
+analysis/          the frozen split contract, the run record, and the evaluation
+                   outputs every reported number is taken from (see below)
 ```
+
+The bulk data is not in this repository and cannot be: the source archive is 74 GB
+compressed, and the curated shards, extracted patches and checkpoints come to
+roughly 90 GB. What is here is everything needed to check the claims.
+
+```
+analysis/split.json               freeze contract: bands, assignment rules, hashed
+                                  evaluation lists, full per-zone membership
+analysis/subset_manifest.csv      all 3,168 candidate patches with zone, scene,
+                                  lon/lat, class pixel counts and validity
+analysis/shards/split_meta.json   independent copy of the frozen lists, as uploaded
+                                  to Kaggle, for cross-checking split.json
+analysis/shards/quant_spec.json   per-band uint16 quantisation spec
+analysis/shards/train_stats.json  train-zone normalisation statistics
+analysis/archive_sha256.txt       SHA-256 of the source archive
+analysis/geo/                     patch footprint centroids and slice geometry
+analysis/kaggle_notebook/         the notebook that executed every rung, and its
+                                  kernel metadata (T4, no internet, seeded)
+analysis/runs_kaggle/<rung>/      per-rung outputs, one directory per training run
+```
+
+## Verifying the reported numbers
+
+Every figure in the results table above can be recomputed from this repository
+without a GPU. Each `analysis/runs_kaggle/<rung>/` holds:
+
+- `eval_val.json` -- the validation evaluation the rung's results row is taken
+  from, with the full 3x3 confusion matrix, per-class IoU/Dice/precision/recall,
+  macro-F1 and distance MAE. `final/` additionally holds `eval_test.json` and
+  `eval_east.json`, the two one-shot held-out evaluations.
+- `metrics.jsonl` -- one record per epoch, the series the training-curve and
+  ablation figures are drawn from.
+- `kernel.log` -- the Kaggle kernel's own stdout for that run.
+
+Two directories are **superseded runs, kept deliberately** rather than deleted:
+`a_v2` is the all-background collapse (validation glacier IoU 0.011) that motivated
+prior-logit head initialisation, and `b1` is the pre-fix run whose checkpoint was
+chosen by an epoch-1 spike, which motivated smoothed selection with a minimum-epoch
+guard. Both failures are discussed in the report. The rungs the results table
+reports are `a_v3` and `b1_v5`.
 
 ## Reproducing
 
