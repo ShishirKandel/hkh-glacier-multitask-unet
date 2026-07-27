@@ -20,7 +20,11 @@ INK, INK2, MUTED = "#0b0b0b", "#52514e", "#898781"
 ARROW, SKIP = "#52514e", "#898781"
 FONT = "'Segoe UI', 'Inter', system-ui, sans-serif"
 
-W, H = 1900, 1000
+# 960, not 1000: dropping the path labels and the spatial-size note emptied the
+# band above the legend, and leaving it would print as a white gutter. The width
+# is what sets on-page type size (the plate is placed to the measure), so this
+# only trims dead height.
+W, H = 1900, 960
 
 # stages: (channels, spatial at 256^2 train crop)
 ENC = [(32, 256), (64, 128), (128, 64), (256, 32)]
@@ -59,6 +63,33 @@ def arrow(x1, y1, x2, y2, color=ARROW, width=2.2, dash=None, marker="arrow"):
             f'stroke="{color}" stroke-width="{width}"{d} marker-end="url(#{marker})"/>')
 
 
+def elbow(pts, color=ARROW, width=2.2, radius=11, marker="arrow"):
+    """Orthogonal connector through pts, corners rounded by `radius`.
+
+    Every segment is axis-aligned: the route leaves a block, runs straight, turns
+    once through 90 degrees and runs straight into the next. Diagonal connectors
+    read as auto-generated; right-angled ones read as drafted.
+    """
+    if len(pts) < 2:
+        return ""
+    d = ["M%.1f,%.1f" % pts[0]]
+    for i in range(1, len(pts) - 1):
+        (x0, y0), (x1, y1), (x2, y2) = pts[i - 1], pts[i], pts[i + 1]
+        l1 = math.hypot(x1 - x0, y1 - y0)
+        l2 = math.hypot(x2 - x1, y2 - y1)
+        if l1 < 1 or l2 < 1:
+            continue
+        r = min(radius, l1 / 2, l2 / 2)
+        d.append("L%.1f,%.1f" % (x1 - (x1 - x0) / l1 * r, y1 - (y1 - y0) / l1 * r))
+        d.append("Q%.1f,%.1f %.1f,%.1f" % (x1, y1,
+                                           x1 + (x2 - x1) / l2 * r,
+                                           y1 + (y2 - y1) / l2 * r))
+    d.append("L%.1f,%.1f" % pts[-1])
+    return (f'<path d="{" ".join(d)}" fill="none" stroke="{color}" '
+            f'stroke-width="{width}" stroke-linecap="round" '
+            f'marker-end="url(#{marker})"/>')
+
+
 def double_bar(x, yc, ch, depth, up_bar=False):
     """One stage: (optional transpose-conv outline bar) + two conv bars. Returns
     (svg, left_x, right_x, top_y, bottom_y, centre_x)."""
@@ -83,6 +114,11 @@ def build():
       <marker id="skiparrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8"
               markerHeight="8" orient="auto-start-reverse">
         <path d="M 0 1 L 9 5 L 0 9 z" fill="{SKIP}"/></marker>
+      ''' + "".join(
+        f'<marker id="head_{k}" viewBox="0 0 10 10" refX="8.5" refY="5" '
+        f'markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
+        f'<path d="M 0 1 L 9 5 L 0 9 z" fill="{c}"/></marker>'
+        for k, c in HEAD.items()) + '''
     </defs>'''
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
          f'viewBox="0 0 {W} {H}">', defs,
@@ -101,12 +137,15 @@ def build():
 
     # ------------------------------------------------------------ encoder
     geo = {}
+    # Stage labels hang below-LEFT, clear of the vertical drop that leaves each
+    # block's centre; centred labels would sit underneath the connector.
     for i, (ch, sp) in enumerate(ENC):
         bars, xl, xr, yt, yb = double_bar(ENC_X[i], ROW_C[i], ch, i)
         s.append(bars)
-        geo[("enc", i)] = (xl, xr, yt, yb, (xl + xr) / 2)
-        s.append(text((xl + xr) / 2, yb + 22, f"{ch} ch", 13.5, INK2, weight=600))
-        s.append(text((xl + xr) / 2, yb + 40, f"{sp}\u00d7{sp}", 12.5, MUTED))
+        cx = (xl + xr) / 2
+        geo[("enc", i)] = (xl, xr, yt, yb, cx)
+        s.append(text(cx - 14, yb + 28, f"{ch} ch", 16.5, INK2, anchor="end", weight=600))
+        s.append(text(cx - 14, yb + 50, f"{sp}\u00d7{sp}", 15.5, MUTED, anchor="end"))
     # bottleneck
     bars, xl, xr, yt, yb = double_bar(BOT_X, ROW_C[4], BOT[0], 4)
     s.append(bars)
@@ -119,26 +158,31 @@ def build():
         depth = 3 - j
         bars, xl, xr, yt, yb = double_bar(DEC_X[j], ROW_C[depth], ch, depth, up_bar=True)
         s.append(bars)
-        geo[("dec", depth)] = (xl, xr, yt, yb, (xl + xr) / 2)
-        s.append(text((xl + xr) / 2, yb + 22, f"{ch} ch", 13.5, INK2, weight=600))
-        s.append(text((xl + xr) / 2, yb + 40, f"{sp}\u00d7{sp}", 12.5, MUTED))
+        cx = (xl + xr) / 2
+        geo[("dec", depth)] = (xl, xr, yt, yb, cx)
+        # below-RIGHT: the riser from the stage below arrives on this block's centre
+        s.append(text(cx + 14, yb + 28, f"{ch} ch", 16.5, INK2, anchor="start", weight=600))
+        s.append(text(cx + 14, yb + 50, f"{sp}\u00d7{sp}", 15.5, MUTED, anchor="start"))
 
     # ------------------------------------------------------------ arrows
     # input -> enc0
     e0 = geo[("enc", 0)]
     s.append(arrow(ix + iw + 8, ROW_C[0], e0[0] - 8, ROW_C[0]))
-    # encoder downsampling
-    for i in range(3):
-        a, b = geo[("enc", i)], geo[("enc", i + 1)]
-        s.append(arrow(a[4] + 14, a[3] + 6, b[4] - 10, b[2] - 6))
-    a, b = geo[("enc", 3)], geo[("bot", 0)]
-    s.append(arrow(a[4] + 14, a[3] + 6, b[4] - 10, b[2] - 6))
-    # bottleneck -> decoder upsampling
-    a, b = geo[("bot", 0)], geo[("dec", 3)]
-    s.append(arrow(a[4] + 14, a[2] - 6, b[4] - 14, b[3] + 6))
-    for depth in (3, 2, 1):
-        a, b = geo[("dec", depth)], geo[("dec", depth - 1)]
-        s.append(arrow(a[4] + 12, a[2] - 6, b[4] - 14, b[3] + 6))
+    # Encoder downsampling: straight DOWN out of the block, one 90-degree turn,
+    # straight RIGHT into the left edge of the next stage.
+    down = [geo[("enc", i)] for i in range(4)] + [geo[("bot", 0)]]
+    for i in range(4):
+        a, b = down[i], down[i + 1]
+        y = ROW_C[i + 1]
+        s.append(elbow([(a[4], a[3] + 7), (a[4], y), (b[0] - 9, y)]))
+    # Expanding path: straight RIGHT out of the block, one turn, straight UP into
+    # the underside of the next stage. Entering from below keeps the riser off the
+    # left edge, which the skip connection already occupies.
+    up = [geo[("bot", 0)]] + [geo[("dec", d)] for d in (3, 2, 1, 0)]
+    for j in range(4):
+        a, b = up[j], up[j + 1]
+        y = ROW_C[4 - j]
+        s.append(elbow([(a[1] + 7, y), (b[4], y), (b[4], b[3] + 9)]))
     # skip connections
     for i in range(4):
         a, b = geo[("enc", i)], geo[("dec", i)]
@@ -149,9 +193,9 @@ def build():
                   "skip connections (concatenate; optional attention gates)", 13.5, MUTED))
     # arrow labels: third annotation line under the top stages, clear of everything
     e0, d0g = geo[("enc", 0)], geo[("dec", 0)]
-    s.append(text((e0[0] + e0[1]) / 2, e0[3] + 58, "\u2198 max-pool 2\u00d72", 12.5, MUTED))
-    s.append(text((d0g[0] + d0g[1]) / 2, d0g[3] + 58, "\u2197 transpose conv 2\u00d72",
-                  12.5, MUTED))
+    s.append(text(e0[4] - 14, e0[3] + 78, "\u2193 max-pool 2\u00d72", 15.5, MUTED, anchor="end"))
+    s.append(text(d0g[4] + 14, d0g[3] + 78, "\u2191 transpose conv 2\u00d72",
+                  15.5, MUTED, anchor="start"))
 
     # ------------------------------------------------------------ heads
     d0 = geo[("dec", 0)]
@@ -160,24 +204,28 @@ def build():
     labels = [("glacier", "Glacier extent", "1\u00d71 conv \u00b7 BCE + Dice"),
               ("type", "Clean vs debris ice", "1\u00d71 conv \u00b7 BCE + Dice, glacier-masked"),
               ("dist", "Boundary distance", "1\u00d71 conv \u00b7 L1, validity-masked")]
-    for (key, title, sub), hy in zip(labels, hys):
+    # The three heads fan out of one turning column, so the connectors stay
+    # axis-aligned like the rest of the diagram instead of splaying diagonally.
+    xj = 1545
+    ystart = [ROW_C[0] - 26, hys[1] + hh / 2, ROW_C[0] + 26]
+    for (key, title, sub), hy, y0 in zip(labels, hys, ystart):
         col = HEAD[key]
-        s.append(arrow(d0[1] + 8, ROW_C[0] + (hy + hh / 2 - ROW_C[0]) * 0.35,
-                       hx - 8, hy + hh / 2, color=col, width=2.6))
+        yc = hy + hh / 2
+        s.append(elbow([(d0[1] + 8, y0), (xj, y0), (xj, yc), (hx - 9, yc)],
+                       color=col, width=2.6, radius=9, marker="head_" + key))
         s.append(rrect(hx, hy, hw, hh, "#ffffff", rx=12, stroke=col, sw=2))
         s.append(f'<circle cx="{hx + 24}" cy="{hy + hh / 2:.1f}" r="7" fill="{col}"/>')
         s.append(text(hx + 42, hy + 31, title, 15.5, INK, anchor="start", weight=600))
         s.append(text(hx + 42, hy + 53, sub, 12.5, INK2, anchor="start"))
 
     # ------------------------------------------------------------ titles & legend
+    # No CONTRACTING/EXPANDING PATH labels and no spatial-size note on the plate:
+    # the module leader asked for both to move into the figure's caption, which is
+    # where prose about the diagram belongs. The caption in body.md carries them.
     s.append(text(52, 64, "Multi-task U-Net", 24, INK, anchor="start", weight=700))
     s.append(text(52, 90, "encoder depth 4 \u00b7 base 32 \u00b7 \u22487.8M parameters \u00b7 "
                   "shared decoder, three task heads", 14.5, INK2, anchor="start"))
     ly = H - 66
-    s.append(text(W - 52, ly - 2, "spatial sizes shown for a 256\u00d7256 training crop;",
-                  13, MUTED, anchor="end"))
-    s.append(text(W - 52, ly + 16, "fully convolutional: evaluated on full 512\u00d7512 patches",
-                  13, MUTED, anchor="end"))
     s.append(rrect(52, ly - 24, 1210, 58, "#fafaf9", rx=9, stroke="#e1e0d9", sw=1))
     lx = 76
     s.append(rrect(lx, ly - 8, 16, 26, BLUE_RAMP[2]))

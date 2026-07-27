@@ -36,6 +36,11 @@ INK, INK2, MUTED = "#0b0b0b", "#52514e", "#898781"
 CLEAN_RGB = np.array([42, 120, 214]) / 255.0
 DEBRIS_RGB = np.array([235, 104, 52]) / 255.0
 INVALID_RGB = np.array([225, 224, 217]) / 255.0
+# error-map palette: agreement quiet, misses loud
+HIT, FP, FN = "#9aa79b", "#7b52c9", "#d92b4b"
+HIT_RGB = np.array([154, 167, 155]) / 255.0
+FP_RGB = np.array([123, 82, 201]) / 255.0
+FN_RGB = np.array([217, 43, 75]) / 255.0
 
 
 def zone_index(zone):
@@ -96,6 +101,21 @@ def overlay(rgb, labels, valid):
     return out
 
 
+def errormap(rgb, truth, pred, valid):
+    """Where the glacier head agrees and where it fails. Agreement is kept quiet so
+    the two error classes carry the panel; a false negative is the costly one for
+    hazard screening, so it gets the strong colour."""
+    base = rgb * 0.35 + 0.52
+    base[~valid] = INVALID_RGB
+    out = base.copy()
+    t, p = truth > 0, pred > 0
+    for m, col in (((t & p) & valid, HIT_RGB),
+                   ((~t & p) & valid, FP_RGB),
+                   ((t & ~p) & valid, FN_RGB)):
+        out[m] = base[m] * 0.18 + col * 0.82
+    return out
+
+
 def main():
     ckpt = torch.load(CKPT, map_location="cpu", weights_only=False)
     cfg = ckpt["cfg"]
@@ -147,17 +167,19 @@ def main():
 
     plt.rcParams.update({"font.family": "Segoe UI", "figure.facecolor": "white"})
     n = len(sel)
-    fig, axes = plt.subplots(n, 3, figsize=(11.4, 3.85 * n))
-    fig.subplots_adjust(left=0.14, right=0.995, top=0.955, bottom=0.035,
-                        wspace=0.03, hspace=0.10)
+    fig, axes = plt.subplots(n, 4, figsize=(13.4, 3.55 * n))
+    fig.subplots_adjust(left=0.115, right=0.996, top=0.958, bottom=0.042,
+                        wspace=0.028, hspace=0.075)
 
-    for c, t in enumerate(("Landsat-7 true colour", "Expert label", "Model prediction")):
+    for c, t in enumerate(("Landsat-7 true colour", "Expert label", "Model prediction",
+                           "Glacier-extent error")):
         axes[0, c].set_title(t, fontsize=13, color=INK, pad=10, fontweight="semibold")
 
     for r, (zone_lab, kind, (zone, name), d) in enumerate(sel):
         axes[r, 0].imshow(d["rgb"])
         axes[r, 1].imshow(overlay(d["rgb"], d["truth"], d["valid"]))
         axes[r, 2].imshow(overlay(d["rgb"], d["pred"], d["valid"]))
+        axes[r, 3].imshow(errormap(d["rgb"], d["truth"], d["pred"], d["valid"]))
         for ax in axes[r]:
             ax.axis("off")
         di = f"{d['d_iou']:.2f}" if np.isfinite(d["d_iou"]) else "n/a"
@@ -168,13 +190,16 @@ def main():
             textcoords="offset points", ha="right", va="center",
             fontsize=11, color=INK2, linespacing=1.7)
 
-    handles = [plt.Line2D([], [], marker="s", linestyle="", markersize=11,
-                          markerfacecolor=c, markeredgewidth=0, label=l)
-               for c, l in ((tuple(CLEAN_RGB), "clean ice"),
-                            (tuple(DEBRIS_RGB), "debris-covered ice"),
-                            (tuple(INVALID_RGB), "invalid (SLC-off / nodata)"))]
-    fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False,
-               fontsize=11, handletextpad=0.4, columnspacing=1.8)
+    swatch = lambda c, l: plt.Line2D([], [], marker="s", linestyle="", markersize=11,
+                                     markerfacecolor=c, markeredgewidth=0, label=l)
+    labels = [(tuple(CLEAN_RGB), "clean ice"),
+              (tuple(DEBRIS_RGB), "debris-covered ice"),
+              (tuple(INVALID_RGB), "invalid (SLC-off / nodata)"),
+              (tuple(HIT_RGB), "glacier hit"),
+              (tuple(FN_RGB), "missed glacier"),
+              (tuple(FP_RGB), "false glacier")]
+    fig.legend(handles=[swatch(c, l) for c, l in labels], loc="lower center", ncol=6,
+               frameon=False, fontsize=11, handletextpad=0.4, columnspacing=1.6)
 
     fig.savefig(OUT, dpi=190)
     print("wrote", OUT)

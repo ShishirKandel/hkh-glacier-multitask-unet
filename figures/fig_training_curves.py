@@ -16,6 +16,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent.parent   # Final Assignment/
 RUNS = ROOT / "analysis" / "runs_kaggle"
@@ -110,37 +111,46 @@ def main():
                     (ep[-1], d[-1], "debris IoU", ORANGE)])
     axB.scatter([best, best], [g[best - 1], d[best - 1]], s=34, zorder=5,
                 color=[BLUE, ORANGE], edgecolor="white", linewidth=1.2)
-    axB.annotate("best checkpoint (epoch 32)", (best, axB.get_ylim()[1]),
-                 xytext=(-6, -2), textcoords="offset points", fontsize=10,
-                 color=MUTED, ha="right", va="top")
     style(axB, "(b)  Validation IoU, final run", ylab="IoU")
-    axB.set_ylim(0, 0.78)
+    axB.set_ylim(0, 0.78)                                  # before the annotation,
+    axB.annotate("selected checkpoint\n(epoch 32)", (best, 0.775),   # which anchors to it
+                 xytext=(-7, -2), textcoords="offset points", fontsize=10,
+                 color=MUTED, ha="right", va="top", linespacing=1.4)
 
-    # ---------------- (c) glacier IoU across ladder rungs
-    labelsC = []
-    for rung, col in zip(["a", "b1", "b2", "c", "f"], BLUE_ORD):
-        rows = load(rung)
-        lw = 2.6 if rung == "f" else 1.8
-        xs = [r["epoch"] for r in rows]
-        ys = [r["val"]["glacier_iou"] for r in rows]
-        axC.plot(xs, ys, color=col, linewidth=lw)
-        labelsC.append((xs[-1], ys[-1], rung, col))
-    style(axC, "(c)  Validation glacier IoU across ladder rungs", ylab="glacier IoU")
-    axC.set_ylim(0, 0.72)
-    endlabels(axC, labelsC)
+    # ---------------- (c, d) per-rung trajectories
+    # Raw per-epoch validation IoU on this data is genuinely noisy (the validation
+    # zone holds only 118 debris-bearing patches). Plotting five raw traces on one
+    # axis is unreadable, so each rung is drawn twice: the raw trace faint, and the
+    # 3-evaluation running mean bold. That mean is not cosmetic smoothing, it is
+    # exactly the quantity Section 4.5's checkpoint rule selects on.
+    def smooth3(ys):
+        return [float(np.mean(ys[max(0, i - 2):i + 1])) for i in range(len(ys))]
 
-    # ---------------- (d) debris IoU across ladder rungs
-    labelsD = []
-    for rung, col in zip(["d1", "d2b", "e1", "f"], ORANGE_ORD):
-        rows = load(rung)
-        lw = 2.6 if rung == "f" else 1.8
-        xs = [r["epoch"] for r in rows]
-        ys = [r["val"]["debris_iou"] for r in rows]
-        axD.plot(xs, ys, color=col, linewidth=lw)
-        labelsD.append((xs[-1], ys[-1], rung, col))
-    style(axD, "(d)  Validation debris IoU across ladder rungs", ylab="debris IoU")
-    axD.set_ylim(0, None)
-    endlabels(axD, labelsD)
+    def trajectories(ax, rungs, cols, metric, title, ylab, ylim):
+        labels = []
+        for rung, col in zip(rungs, cols):
+            rows = load(rung)
+            xs = [r["epoch"] for r in rows]
+            ys = [r["val"][metric] for r in rows]
+            sm = smooth3(ys)
+            ax.plot(xs, ys, color=col, linewidth=0.9, alpha=0.30, zorder=2)
+            ax.plot(xs, sm, color=col, linewidth=2.8 if rung == "f" else 2.0, zorder=3)
+            labels.append((xs[-1], sm[-1], rung, col))
+        style(ax, title, ylab=ylab)
+        ax.set_ylim(*ylim)
+        endlabels(ax, labels)
+
+    trajectories(axC, ["a", "b1", "b2", "c", "f"], BLUE_ORD, "glacier_iou",
+                 "(c)  Validation glacier IoU across ladder rungs",
+                 "glacier IoU", (0, 0.72))
+    trajectories(axD, ["d1", "d2b", "e1", "f"], ORANGE_ORD, "debris_iou",
+                 "(d)  Validation debris IoU across ladder rungs",
+                 "debris IoU", (0, 0.345))
+    axD.spines["left"].set_bounds(0, 0.30)   # headroom for the note, no bare spine
+    axD.annotate("bold = 3-evaluation running mean, the quantity\n"
+                 "checkpoint selection scores; faint = raw",
+                 xy=(0.03, 0.97), xycoords="axes fraction", fontsize=9.5,
+                 color=MUTED, va="top", linespacing=1.4)
 
     fig.savefig(OUT, dpi=220)
     print("wrote", OUT)
