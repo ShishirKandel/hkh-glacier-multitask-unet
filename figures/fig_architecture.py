@@ -259,20 +259,25 @@ def build():
     return "".join(s)
 
 
-def main():
-    svg = build()
+def render(svg, out, w, h, stem="fig", scale=2):
+    """Rasterise a flat SVG through headless Edge. Shared with fig_attention.py so
+    the two hand-drawn diagrams cannot drift apart in renderer or scale factor."""
     html = ("<!doctype html><html><head><meta charset='utf-8'><style>"
             "html,body{margin:0;padding:0;background:#ffffff;}</style></head>"
             f"<body>{svg}</body></html>")
-    tmp = Path(tempfile.gettempdir()) / "fig_architecture.html"
+    tmp = Path(tempfile.gettempdir()) / (stem + ".html")
     tmp.write_text(html, encoding="utf-8")
-    out = Path(__file__).resolve().parent.parent / "latex" / "figures" / "fig_architecture.png"
     edge = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
     subprocess.run([edge, "--headless", "--disable-gpu",
-                    f"--screenshot={out}", f"--window-size={W},{H}",
-                    "--force-device-scale-factor=2", "--hide-scrollbars",
+                    f"--screenshot={out}", f"--window-size={w},{h}",
+                    f"--force-device-scale-factor={scale}", "--hide-scrollbars",
                     tmp.as_uri()], check=True, timeout=120)
     print("wrote", out)
+
+
+def main():
+    out = Path(__file__).resolve().parent.parent / "latex" / "figures" / "fig_architecture.png"
+    render(build(), out, W, H, stem="fig_architecture")
 
 
 if __name__ == "__main__":
