@@ -1,0 +1,62 @@
+LOCAL ARTEFACT VERIFICATION
+Sections 3 to 6 recompute values from the files on disk and compare them
+against values frozen before the first GPU run. Sections 1 and 2 report
+the machine and the source archive.
+
+1. MACHINE AND INTERPRETER  (reported, not verified)
+  host           BJ-T4NRKW002659167
+  user           ADMIN
+  platform       Windows 11 (AMD64)
+  processor      AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD
+  python         3.13.13
+  numpy          2.5.1
+  torch          2.12.1+cpu (cuda available: False)
+  run at         2026-07-25 12:23:34 UTC
+
+2. SOURCE ARCHIVE
+  file           hkh_patches.tar.gz
+  size           73,857,720,934 bytes (73.86 GB)
+  recorded       627dff4b0a9635cdb5d7868495552a707bb718fa33905d1bd7a4d96c3705e935
+  (re-hashing 73 GB is skipped by default; run with --hash-archive)
+  [PASS] archive opens and starts with the gzip magic bytes  1f8b
+
+3. FROZEN EVALUATION LISTS
+  [PASS] val   list SHA-256 unchanged since freeze  2f0b9a69271e01f855c6cdd8405f657eee4e1c4de663501cd3c7d090cd70f888
+  [PASS] val   hash also matches the copy shipped with the shards
+  [PASS] test  list SHA-256 unchanged since freeze  f73747b4f7346ed25c35b9a8f0ded9b77303c7d654e2b68151ef5b1ac08c3c94
+  [PASS] test  hash also matches the copy shipped with the shards
+  [PASS] east  list SHA-256 unchanged since freeze  f3f4c8937fb54f3e2b2d89c7b9ec13f124042ac8915d112075574d289079dfc9
+  [PASS] east  hash also matches the copy shipped with the shards
+
+4. ZONE MEMBERSHIP
+  [PASS] train and val share no patch
+  [PASS] test and train share no patch
+  [PASS] test and val share no patch
+  [PASS] east and train share no patch
+  [PASS] east and val share no patch
+  [PASS] east and test share no patch
+  [PASS] no buffer or straddler patch reached an evaluation list
+  [PASS] no buffer or straddler patch reached the training list
+
+5. SHARD CENSUS RECOMPUTED FROM THE .npz FILES
+  zone     patches  expected    debris  expected   debris px    expected
+  train       1056      1056       435       435   2,366,544   2,366,544
+  val          283       283       118       118     449,699     449,699
+  test         315       315       116       116     538,263     538,263
+  east         293       293        63        63     411,274     411,274
+  [PASS] shard contents match the frozen split contract in every zone
+
+6. DEQUANTISED CHANNEL BEHAVIOUR (whole training zone)
+  ch 11 mean over clean-ice labels   -0.7305  (n = 17,878,452)
+  ch 11 mean over background         -0.2893  (n = 224,948,428)
+  ch 11 mean over all valid pixels   -0.3231
+  [PASS] ice is more negative than background in channel 11, confirming the sign-flipped NDSI convention  gap 0.441
+  [PASS] recomputed channel-11 mean matches train_stats.json  -0.3231 vs -0.3231
+  ch 13 elevation (m)                min    244.1   max   7607.3
+  ch 14 slope (degrees)              min      0.0   max     82.9
+  [PASS] elevation within the SRTM range for the HKH (-500 to 9,000 m; the lower bound allows the documented small negative artifacts)
+  [PASS] slope within 0 to 90 degrees
+  quantisation: uint16, theoretical max abs error 0.005802 over the band channels,
+  measured 0.005797 against 12 float32 samples at build time.
+
+RESULT: 20 of 20 checks passed in 152 s.

@@ -144,14 +144,14 @@ def build():
         s.append(bars)
         cx = (xl + xr) / 2
         geo[("enc", i)] = (xl, xr, yt, yb, cx)
-        s.append(text(cx - 14, yb + 28, f"{ch} ch", 16.5, INK2, anchor="end", weight=600))
-        s.append(text(cx - 14, yb + 50, f"{sp}\u00d7{sp}", 15.5, MUTED, anchor="end"))
+        s.append(text(cx - 14, yb + 30, f"{ch} ch", 19, INK2, anchor="end", weight=600))
+        s.append(text(cx - 14, yb + 57, f"{sp}\u00d7{sp}", 17.5, MUTED, anchor="end"))
     # bottleneck
     bars, xl, xr, yt, yb = double_bar(BOT_X, ROW_C[4], BOT[0], 4)
     s.append(bars)
     geo[("bot", 0)] = (xl, xr, yt, yb, (xl + xr) / 2)
-    s.append(text((xl + xr) / 2, yb + 22, "512 ch \u00b7 16\u00d716", 13.5, INK2, weight=600))
-    s.append(text((xl + xr) / 2, yb + 40, "bottleneck", 12.5, MUTED))
+    s.append(text((xl + xr) / 2, yb + 24, "512 ch \u00b7 16\u00d716", 16, INK2, weight=600))
+    s.append(text((xl + xr) / 2, yb + 47, "bottleneck", 14.5, MUTED))
 
     # ------------------------------------------------------------ decoder
     for j, (ch, sp) in enumerate(DEC):          # j=0 bottom row (depth 3) .. j=3 top
@@ -161,8 +161,8 @@ def build():
         cx = (xl + xr) / 2
         geo[("dec", depth)] = (xl, xr, yt, yb, cx)
         # below-RIGHT: the riser from the stage below arrives on this block's centre
-        s.append(text(cx + 14, yb + 28, f"{ch} ch", 16.5, INK2, anchor="start", weight=600))
-        s.append(text(cx + 14, yb + 50, f"{sp}\u00d7{sp}", 15.5, MUTED, anchor="start"))
+        s.append(text(cx + 14, yb + 30, f"{ch} ch", 19, INK2, anchor="start", weight=600))
+        s.append(text(cx + 14, yb + 57, f"{sp}\u00d7{sp}", 17.5, MUTED, anchor="start"))
 
     # ------------------------------------------------------------ arrows
     # input -> enc0
@@ -189,13 +189,14 @@ def build():
         yc = ROW_C[i]
         s.append(arrow(a[1] + 8, yc, b[0] - 8, yc, color=SKIP, width=2,
                        dash="7 6", marker="skiparrow"))
-    s.append(text((geo[("enc", 0)][1] + geo[("dec", 0)][0]) / 2, ROW_C[0] - 14,
-                  "skip connections (concatenate; optional attention gates)", 13.5, MUTED))
-    # arrow labels: third annotation line under the top stages, clear of everything
+    s.append(text((geo[("enc", 0)][1] + geo[("dec", 0)][0]) / 2, ROW_C[0] - 16,
+                  "skip connections (concatenate; optional attention gates)", 16.5, MUTED))
+    # arrow labels: third annotation line under the top stages, clear of everything.
+    # Pushed to +88 because the spatial-size line above it moved to +57.
     e0, d0g = geo[("enc", 0)], geo[("dec", 0)]
-    s.append(text(e0[4] - 14, e0[3] + 78, "\u2193 max-pool 2\u00d72", 15.5, MUTED, anchor="end"))
-    s.append(text(d0g[4] + 14, d0g[3] + 78, "\u2191 transpose conv 2\u00d72",
-                  15.5, MUTED, anchor="start"))
+    s.append(text(e0[4] - 14, e0[3] + 88, "\u2193 max-pool 2\u00d72", 17.5, MUTED, anchor="end"))
+    s.append(text(d0g[4] + 14, d0g[3] + 88, "\u2191 transpose conv 2\u00d72",
+                  17.5, MUTED, anchor="start"))
 
     # ------------------------------------------------------------ heads
     d0 = geo[("dec", 0)]
@@ -215,7 +216,11 @@ def build():
                        color=col, width=2.6, radius=9, marker="head_" + key))
         s.append(rrect(hx, hy, hw, hh, "#ffffff", rx=12, stroke=col, sw=2))
         s.append(f'<circle cx="{hx + 24}" cy="{hy + hh / 2:.1f}" r="7" fill="{col}"/>')
-        s.append(text(hx + 42, hy + 31, title, 15.5, INK, anchor="start", weight=600))
+        # The title grows; the sub-label cannot. "1x1 conv . BCE + Dice,
+        # glacier-masked" already fills the 226 units between hx+42 and the box
+        # edge, so raising it past 12.5 overruns the rounded rectangle. Widening
+        # the head boxes would move them, which is out of scope here.
+        s.append(text(hx + 42, hy + 30, title, 17, INK, anchor="start", weight=600))
         s.append(text(hx + 42, hy + 53, sub, 12.5, INK2, anchor="start"))
 
     # ------------------------------------------------------------ titles & legend
@@ -223,27 +228,32 @@ def build():
     # the module leader asked for both to move into the figure's caption, which is
     # where prose about the diagram belongs. The caption in body.md carries them.
     s.append(text(52, 64, "Multi-task U-Net", 24, INK, anchor="start", weight=700))
-    s.append(text(52, 90, "encoder depth 4 \u00b7 base 32 \u00b7 \u22487.8M parameters \u00b7 "
-                  "shared decoder, three task heads", 14.5, INK2, anchor="start"))
+    s.append(text(52, 92, "encoder depth 4 \u00b7 base 32 \u00b7 \u22487.8M parameters \u00b7 "
+                  "shared decoder, three task heads", 17, INK2, anchor="start"))
     ly = H - 66
     s.append(rrect(52, ly - 24, 1210, 58, "#fafaf9", rx=9, stroke="#e1e0d9", sw=1))
     lx = 76
     s.append(rrect(lx, ly - 8, 16, 26, BLUE_RAMP[2]))
-    s.append(text(lx + 26, ly + 10, "ConvBlock: 2\u00d7 (3\u00d73 conv + BatchNorm + ReLU)",
-                  13.5, INK2, anchor="start"))
-    lx += 330
+    # 14.5, not higher: this is the widest legend label and its slot is only the
+    # 330 units before the next swatch.
+    s.append(text(lx + 26, ly + 10, "ConvBlock: 2× (3×3 conv + BatchNorm + ReLU)",
+                  14.5, INK2, anchor="start"))
+    # 355/190/175 rather than 330/190/190: the first label is the widest and needs
+    # the extra 25 units at 14.5. The 25 is taken back off the last gap, so the row
+    # still ends well inside the panel.
+    lx += 355
     s.append(rrect(lx, ly - 8, 10, 26, "#ffffff", stroke=BLUE_RAMP[2], sw=1.6))
-    s.append(text(lx + 20, ly + 10, "transpose-conv output", 13.5, INK2, anchor="start"))
+    s.append(text(lx + 20, ly + 10, "transpose-conv output", 14.5, INK2, anchor="start"))
     lx += 190
     s.append(f'<line x1="{lx}" y1="{ly + 5}" x2="{lx + 44}" y2="{ly + 5}" stroke="{SKIP}" '
              f'stroke-width="2" stroke-dasharray="7 6" marker-end="url(#skiparrow)"/>')
-    s.append(text(lx + 54, ly + 10, "skip connection", 13.5, INK2, anchor="start"))
-    lx += 190
+    s.append(text(lx + 54, ly + 10, "skip connection", 14.5, INK2, anchor="start"))
+    lx += 175
     s.append(f'<circle cx="{lx + 8}" cy="{ly + 5}" r="7" fill="{HEAD["glacier"]}"/>')
     s.append(f'<circle cx="{lx + 28}" cy="{ly + 5}" r="7" fill="{HEAD["type"]}"/>')
     s.append(f'<circle cx="{lx + 48}" cy="{ly + 5}" r="7" fill="{HEAD["dist"]}"/>')
     s.append(text(lx + 66, ly + 10, "task heads on the shared 32-ch decoder output",
-                  13.5, INK2, anchor="start"))
+                  14.5, INK2, anchor="start"))
 
     s.append("</svg>")
     return "".join(s)
